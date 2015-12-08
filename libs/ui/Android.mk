@@ -27,12 +27,27 @@ LOCAL_SRC_FILES:= \
 	Region.cpp \
 	UiConfig.cpp
 
+ifeq ($(BOARD_HAS_MTK_HARDWARE),true)
+LOCAL_SRC_FILES += \
+	mediatek/Fence.cpp \
+	mediatek/IDumpTunnel.cpp \
+	mediatek/RefBaseDump.cpp
+
+LOCAL_CFLAGS += -DMTK_HARDWARE
+endif
+
 LOCAL_SHARED_LIBRARIES := \
 	libcutils \
 	libhardware \
 	libsync \
 	libutils \
 	liblog
+
+ifeq ($(BOARD_HAS_MTK_HARDWARE),true)
+LOCAL_SHARED_LIBRARIES += \
+	libdl \
+	libbinder
+endif
 
 ifneq ($(BOARD_FRAMEBUFFER_FORCE_FORMAT),)
 LOCAL_CFLAGS += -DFRAMEBUFFER_FORCE_FORMAT=$(BOARD_FRAMEBUFFER_FORCE_FORMAT)
