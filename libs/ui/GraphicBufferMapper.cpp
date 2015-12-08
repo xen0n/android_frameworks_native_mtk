@@ -77,12 +77,13 @@ status_t GraphicBufferMapper::unregisterBuffer(buffer_handle_t handle)
     return err;
 }
 
-// MTK
+#ifdef MTK_HARDWARE
 status_t GraphicBufferMapper::lock(buffer_handle_t handle,
         int usage, const Rect& bounds, void** vaddr)
 {
     return lock(handle, static_cast<uint32_t>(usage), bounds, vaddr);
 }
+#endif
 
 status_t GraphicBufferMapper::lock(buffer_handle_t handle,
         uint32_t usage, const Rect& bounds, void** vaddr)

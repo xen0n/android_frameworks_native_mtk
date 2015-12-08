@@ -42,9 +42,10 @@ public:
 
     status_t unregisterBuffer(buffer_handle_t handle);
 
-    // MTK
+#ifdef MTK_HARDWARE
     status_t lock(buffer_handle_t handle,
             int usage, const Rect& bounds, void** vaddr);
+#endif
 
     status_t lock(buffer_handle_t handle,
             uint32_t usage, const Rect& bounds, void** vaddr);
