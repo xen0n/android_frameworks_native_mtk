@@ -56,7 +56,12 @@ public:
 
     ssize_t getSensorList(Sensor const* const** list) const;
     Sensor const* getDefaultSensor(int type);
+#ifdef MTK_HARDWARE
+    sp<SensorEventQueue> createEventQueue(String8 packageName, int mode = 0);
+    sp<SensorEventQueue> createEventQueue();
+#else
     sp<SensorEventQueue> createEventQueue(String8 packageName = String8(""), int mode = 0);
+#endif
     bool isDataInjectionEnabled();
 
 private:
@@ -64,6 +69,9 @@ private:
     void sensorManagerDied();
 
     SensorManager(const String16& opPackageName);
+#ifdef MTK_HARDWARE
+    SensorManager();
+#endif
     status_t assertStateLocked() const;
 
 private:
@@ -77,6 +85,15 @@ private:
     mutable sp<IBinder::DeathRecipient> mDeathObserver;
     const String16 mOpPackageName;
 };
+
+
+#ifdef MTK_HARDWARE
+// be compatible with MTK Lollipop blobs
+extern "C" {
+    extern android::Mutex _ZN7android9SingletonINS_13SensorManagerEE5sLockE;
+    extern SensorManager *_ZN7android9SingletonINS_13SensorManagerEE9sInstanceE;
+}
+#endif  // MTK_HARDWARE
 
 // ----------------------------------------------------------------------------
 }; // namespace android
