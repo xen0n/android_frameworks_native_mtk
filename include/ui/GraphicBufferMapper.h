@@ -42,11 +42,6 @@ public:
 
     status_t unregisterBuffer(buffer_handle_t handle);
 
-#ifdef MTK_HARDWARE
-    status_t lock(buffer_handle_t handle,
-            int usage, const Rect& bounds, void** vaddr);
-#endif
-
     status_t lock(buffer_handle_t handle,
             uint32_t usage, const Rect& bounds, void** vaddr);
 
@@ -76,6 +71,15 @@ private:
     GraphicBufferMapper();
     gralloc_module_t const *mAllocMod;
 };
+
+#ifdef MTK_HARDWARE
+extern "C" {
+
+    status_t _ZN7android19GraphicBufferMapper4lockEPK13native_handleiRKNS_4RectEPPv(
+            buffer_handle_t handle, int usage, const Rect& bounds, void** vaddr);
+
+}
+#endif
 
 // ---------------------------------------------------------------------------
 
