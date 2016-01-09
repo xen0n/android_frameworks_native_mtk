@@ -81,6 +81,8 @@ status_t GraphicBufferMapper::unregisterBuffer(buffer_handle_t handle)
 extern "C" {
 
 extern status_t _ZN7android19GraphicBufferMapper4lockEPK13native_handlejRKNS_4RectEPPv(buffer_handle_t, uint32_t, const Rect&, void**);
+extern status_t _ZN7android19GraphicBufferMapper9lockYCbCrEPK13native_handlejRKNS_4RectEP13android_ycbcr(buffer_handle_t, uint32_t, const Rect&, android_ycbcr *);
+
 
 status_t _ZN7android19GraphicBufferMapper4lockEPK13native_handleiRKNS_4RectEPPv(buffer_handle_t handle,
         int usage, const Rect& bounds, void** vaddr)
@@ -88,6 +90,12 @@ status_t _ZN7android19GraphicBufferMapper4lockEPK13native_handleiRKNS_4RectEPPv(
     return _ZN7android19GraphicBufferMapper4lockEPK13native_handlejRKNS_4RectEPPv(handle, static_cast<uint32_t>(usage), bounds, vaddr);
 }
 
+
+status_t _ZN7android19GraphicBufferMapper9lockYCbCrEPK13native_handleiRKNS_4RectEP13android_ycbcr(buffer_handle_t handle,
+        int usage, const Rect& bounds, android_ycbcr *ycbcr)
+{
+    return _ZN7android19GraphicBufferMapper9lockYCbCrEPK13native_handlejRKNS_4RectEP13android_ycbcr(handle, static_cast<uint32_t>(usage), bounds, ycbcr);
+}
 }
 #endif
 
