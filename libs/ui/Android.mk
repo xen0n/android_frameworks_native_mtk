@@ -63,6 +63,7 @@ LOCAL_SHARED_LIBRARIES := \
 	liblog
 
 ifeq ($(BOARD_HAS_MTK_HARDWARE),true)
+LOCAL_CFLAGS += -DMTK_HARDWARE
 LOCAL_SHARED_LIBRARIES += \
 	libbinder
 endif
