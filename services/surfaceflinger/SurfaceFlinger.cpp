@@ -453,13 +453,20 @@ void SurfaceFlinger::init() {
     eglInitialize(mEGLDisplay, NULL, NULL);
 
     // start the EventThread
-    sp<VSyncSource> vsyncSrc = new DispSyncSource(&mPrimaryDispSync,
-            vsyncPhaseOffsetNs, true, "app");
-    mEventThread = new EventThread(vsyncSrc);
-    sp<VSyncSource> sfVsyncSrc = new DispSyncSource(&mPrimaryDispSync,
-            sfVsyncPhaseOffsetNs, true, "sf");
-    mSFEventThread = new EventThread(sfVsyncSrc);
-    mEventQueue.setEventThread(mSFEventThread);
+    if (vsyncPhaseOffsetNs != sfVsyncPhaseOffsetNs) {
+        sp<VSyncSource> vsyncSrc = new DispSyncSource(&mPrimaryDispSync,
+                vsyncPhaseOffsetNs, true, "app");
+        mEventThread = new EventThread(vsyncSrc);
+        sp<VSyncSource> sfVsyncSrc = new DispSyncSource(&mPrimaryDispSync,
+                sfVsyncPhaseOffsetNs, true, "sf");
+        mSFEventThread = new EventThread(sfVsyncSrc);
+        mEventQueue.setEventThread(mSFEventThread);
+    } else {
+        sp<VSyncSource> vsyncSrc = new DispSyncSource(&mPrimaryDispSync,
+                vsyncPhaseOffsetNs, true, "sf-app");
+        mEventThread = new EventThread(vsyncSrc);
+        mEventQueue.setEventThread(mEventThread);
+    }
 
     // Initialize the H/W composer object.  There may or may not be an
     // actual hardware composer underneath.
@@ -1074,6 +1081,8 @@ void SurfaceFlinger::postComposition()
         mAnimFrameTracker.advanceFrame();
     }
 
+    dumpDrawCycle(false);
+
     if (hw->getPowerMode() == HWC_POWER_MODE_OFF) {
         return;
     }
@@ -1240,6 +1249,8 @@ void SurfaceFlinger::setUpHWComposer() {
                 }
             }
         }
+
+        dumpDrawCycle(true);
 
         status_t err = hwc.prepare();
         ALOGE_IF(err, "HWComposer::prepare failed (%s)", strerror(-err));
@@ -2958,7 +2969,7 @@ SurfaceFlinger::getLayerSortedByZForHwcDisplay(int id) {
         }
     }
     if (dpy == NULL) {
-        ALOGE("getLayerSortedByZForHwcDisplay: invalid hwc display id %d", id);
+        ALOGW("getLayerSortedByZForHwcDisplay: invalid hwc display id %d", id);
         // Just use the primary display so we have something to return
         dpy = getBuiltInDisplay(DisplayDevice::DISPLAY_PRIMARY);
     }
@@ -3137,12 +3148,14 @@ status_t SurfaceFlinger::onTransact(
             }
             case 1018: { // Modify Choreographer's phase offset
                 n = data.readInt32();
-                mEventThread->setPhaseOffset(static_cast<nsecs_t>(n));
+                if (mEventThread != NULL)
+                    mEventThread->setPhaseOffset(static_cast<nsecs_t>(n));
                 return NO_ERROR;
             }
             case 1019: { // Modify SurfaceFlinger's phase offset
                 n = data.readInt32();
-                mSFEventThread->setPhaseOffset(static_cast<nsecs_t>(n));
+                if (mSFEventThread != NULL)
+                    mSFEventThread->setPhaseOffset(static_cast<nsecs_t>(n));
                 return NO_ERROR;
             }
         }
