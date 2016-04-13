@@ -62,10 +62,9 @@ public:
     public:
         ProxyConsumerListener(const wp<ConsumerListener>& consumerListener);
         virtual ~ProxyConsumerListener();
-        virtual void onFrameAvailable(const BufferItem& item) override;
-        virtual void onFrameReplaced(const BufferItem& item) override;
-        virtual void onBuffersReleased() override;
-        virtual void onSidebandStreamChanged() override;
+        virtual void onFrameAvailable(const BufferItem& item);
+        virtual void onBuffersReleased();
+        virtual void onSidebandStreamChanged();
     private:
         // mConsumerListener is a weak reference to the IConsumerListener.  This is
         // the raison d'etre of ProxyConsumerListener.
