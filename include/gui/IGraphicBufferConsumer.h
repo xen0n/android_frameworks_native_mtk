@@ -34,7 +34,6 @@
 namespace android {
 // ----------------------------------------------------------------------------
 
-class BufferItem;
 class Fence;
 class GraphicBuffer;
 class IConsumerListener;

@@ -97,7 +97,7 @@ status_t BufferQueue::requestBuffer(int slot, sp<GraphicBuffer>* buf) {
 
 status_t BufferQueue::dequeueBuffer(int *outBuf, sp<Fence>* outFence, bool async,
         uint32_t w, uint32_t h, uint32_t format, uint32_t usage) {
-    return mProducer->dequeueBuffer(outBuf, outFence, async, w, h, format, usage);
+    return mProducer->dequeueBuffer(outBuf, outFence, async, w, h, static_cast<PixelFormat>(format), usage);
 }
 
 status_t BufferQueue::detachProducerBuffer(int slot) {
@@ -189,7 +189,7 @@ void BufferQueue::setConsumerName(const String8& name) {
 }
 
 status_t BufferQueue::setDefaultBufferFormat(uint32_t defaultFormat) {
-    return mConsumer->setDefaultBufferFormat(defaultFormat);
+    return mConsumer->setDefaultBufferFormat(static_cast<PixelFormat>(defaultFormat));
 }
 
 status_t BufferQueue::setConsumerUsageBits(uint32_t usage) {
