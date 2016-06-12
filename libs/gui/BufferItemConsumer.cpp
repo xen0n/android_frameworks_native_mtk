@@ -115,8 +115,8 @@ status_t BufferItemConsumer::setDefaultBufferSize(uint32_t w, uint32_t h) {
 	return ConsumerBase::setDefaultBufferSize(w, h);
 }
 
-status_t BufferItemConsumer::setDefaultBufferFormat(PixelFormat defaultFormat) {
-    return ConsumerBase::setDefaultBufferFormat(defaultFormat);
+status_t BufferItemConsumer::setDefaultBufferFormat(uint32_t defaultFormat) {
+    return ConsumerBase::setDefaultBufferFormat(static_cast<PixelFormat>(defaultFormat));
 }
 
 status_t BufferItemConsumer::setDefaultBufferDataSpace(
