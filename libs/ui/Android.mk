@@ -43,7 +43,8 @@ LOCAL_SRC_FILES := \
 	PixelFormat.cpp \
 	Rect.cpp \
 	Region.cpp \
-	UiConfig.cpp
+	UiConfig.cpp \
+	MediatekHacks.cpp
 
 ifeq ($(BOARD_HAS_MTK_HARDWARE),true)
 LOCAL_SRC_FILES += \
