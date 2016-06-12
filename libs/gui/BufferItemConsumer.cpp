@@ -111,4 +111,17 @@ status_t BufferItemConsumer::releaseBuffer(const BufferItem &item,
     return err;
 }
 
+status_t BufferItemConsumer::setDefaultBufferSize(uint32_t w, uint32_t h) {
+	return ConsumerBase::setDefaultBufferSize(w, h);
+}
+
+status_t BufferItemConsumer::setDefaultBufferFormat(PixelFormat defaultFormat) {
+    return ConsumerBase::setDefaultBufferFormat(defaultFormat);
+}
+
+status_t BufferItemConsumer::setDefaultBufferDataSpace(
+        android_dataspace defaultDataSpace) {
+    return ConsumerBase::setDefaultBufferDataSpace(defaultDataSpace);
+}
+
 } // namespace android
