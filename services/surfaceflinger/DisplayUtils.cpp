@@ -174,6 +174,11 @@ bool DisplayUtils::canAllocateHwcDisplayIdForVDS(int usage) {
     // on AOSP builds with QTI_BSP disabled, we should allocate hwc display id for virtual display
     int flag_mask = 0xffffffff;
 
+#ifdef MTK_HARDWARE
+    // xen0n: seems necessary for at least Meizu MX4's hwcomposer to not crash
+    flag_mask = 0;
+#endif
+
 #ifdef QTI_BSP
 #ifdef FORCE_HWC_COPY_FOR_VIRTUAL_DISPLAYS
     // Reserve hardware acceleration for WFD use-case
