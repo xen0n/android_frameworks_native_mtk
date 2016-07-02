@@ -180,6 +180,11 @@ bool DisplayUtils::canAllocateHwcDisplayIdForVDS(int usage) {
     property_get("debug.vds.allow_hwc", value, "0");
     int allowHwcForVDS = atoi(value);
 
+#ifdef MTK_HARDWARE
+    // xen0n: seems necessary for at least Meizu MX4's hwcomposer to not crash
+    flag_mask = 0;
+#endif
+
 #ifdef QTI_BSP
     // Do not allow hardware acceleration
     flag_mask = GRALLOC_USAGE_PRIVATE_WFD;
