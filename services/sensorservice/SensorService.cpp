@@ -972,6 +972,19 @@ status_t SensorService::enable(const sp<SensorEventConnection>& connection,
     return err;
 }
 
+#ifdef MEIZU_MX4_PROXIMITY_HACK
+static void _meizu_write_ps_enable(bool enable)
+{
+	int fd = open("/sys/class/meizu/ps/ps_enable", O_WRONLY);
+	if (fd >= 0) {
+		write(fd, enable ? "1" : "0", 1);
+		close(fd);
+	} else {
+		ALOGE("open proximity sensor enable file failed: %s", strerror(errno));
+	}
+}
+#endif
+
 status_t SensorService::disable(const sp<SensorEventConnection>& connection,
         int handle)
 {
@@ -984,6 +997,14 @@ status_t SensorService::disable(const sp<SensorEventConnection>& connection,
         SensorInterface* sensor = mSensorMap.valueFor(handle);
         err = sensor ? sensor->activate(connection.get(), false) : status_t(BAD_VALUE);
 
+#ifdef MEIZU_MX4_PROXIMITY_HACK
+		if (sensor && sensor->getSensor().getType() == SENSOR_TYPE_PROXIMITY) {
+			ALOGD("working around proximity sensor badly interacting with touchscreen");
+			_meizu_write_ps_enable(true);
+			usleep(10000);
+			_meizu_write_ps_enable(false);
+		}
+#endif
     }
     if (err == NO_ERROR) {
         SensorRegistrationInfo &reg_info =
