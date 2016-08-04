@@ -74,6 +74,7 @@
 
 #include "DisplayHardware/FramebufferSurface.h"
 #include "DisplayHardware/HWComposer.h"
+#include "ExSurfaceFlinger/ExHWComposer.h"
 #include "DisplayHardware/VirtualDisplaySurface.h"
 
 #include "Effects/Daltonizer.h"
@@ -2003,7 +2004,12 @@ bool SurfaceFlinger::doComposeSurfaces(const sp<const DisplayDevice>& hw, const 
         }
 
         // Never touch the framebuffer if we don't have any framebuffer layers
+#if defined(QTI_BSP) && defined(SDM_TARGET)
+        const bool hasHwcComposition = hwc.hasHwcComposition(id) |
+            (reinterpret_cast<ExHWComposer*>(&hwc))->getS3DFlag(id);
+#else
         const bool hasHwcComposition = hwc.hasHwcComposition(id);
+#endif
         if (hasHwcComposition) {
             // when using overlays, we assume a fully transparent framebuffer
             // NOTE: we could reduce how much we need to clear, for instance
@@ -3463,10 +3469,9 @@ void SurfaceFlinger::renderScreenImplLocked(
     // make sure to clear all GL error flags
     engine.checkErrors();
 
-    if (DisplayDevice::DISPLAY_PRIMARY == hw->getDisplayType() &&
-                hw->isPanelInverseMounted()) {
+    if (DisplayDevice::DISPLAY_PRIMARY == hw->getDisplayType()) {
         rotation = (Transform::orientation_flags)
-                (rotation ^ Transform::ROT_180);
+                (rotation ^ hw->getPanelMountFlip());
     }
 
     // set-up our viewport

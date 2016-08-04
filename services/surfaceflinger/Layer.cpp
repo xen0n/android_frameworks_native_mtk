@@ -467,7 +467,11 @@ void Layer::setGeometry(
 
     // this gives us only the "orientation" component of the transform
     const State& s(getDrawingState());
+#if defined(QTI_BSP) && !defined(QCOM_BSP_LEGACY)
+    if (!isOpaque(s)) {
+#else
     if (!isOpaque(s) || s.alpha != 0xFF) {
+#endif
         layer.setBlending(mPremultipliedAlpha ?
                 HWC_BLENDING_PREMULT :
                 HWC_BLENDING_COVERAGE);
@@ -1444,9 +1448,14 @@ Region Layer::latchBuffer(bool& recomputeVisibleRegions)
 
             // Remove any stale buffers that have been dropped during
             // updateTexImage
-            while (mQueueItems[0].mFrameNumber != currentFrameNumber) {
+            while ((mQueuedFrames > 0) && (mQueueItems[0].mFrameNumber != currentFrameNumber)) {
                 mQueueItems.removeAt(0);
                 android_atomic_dec(&mQueuedFrames);
+            }
+
+            if (mQueuedFrames == 0) {
+                ALOGE("[%s] mQueuedFrames is zero !!", mName.string());
+                return outDirtyRegion;
             }
 
             mQueueItems.removeAt(0);
